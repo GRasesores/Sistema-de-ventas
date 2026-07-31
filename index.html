@@ -505,7 +505,8 @@ function selectStage(i){
       "<label>Subir archivo de contactos (CSV, VCF, TXT o Excel)</label>"+
       "<input type='file' id='contactFile' accept='.csv,.vcf,.txt,.xlsx,.xls' onchange='handleContactFile(event)'>"+
       "<div id='contactPreview' class='hint-static' style='margin-top:8px'></div>"+
-      " <button class='btn' style='margin-top:8px' onclick=\"log('Cliente ideal a prospectar consultado')\">Ver cliente ideal a prospectar</button>";
+      " <button class='btn' style='margin-top:8px' onclick=\"log('Cliente ideal a prospectar consultado')\">Ver cliente ideal a prospectar</button>"+
+      "<div style='margin-top:14px'><button class='btn-row' style='opacity:.6' onclick=\"log('Campaña diaria: pendiente construir workflow 09 en n8n')\">Agregar prospectos a campaña diaria (AIDA) <span class='tag tag-pend'>pendiente workflow 09</span></button></div>";
   } else if(i===1){
     toolsWrap.innerHTML = "<button class='btn' onclick=\"log('Abrir conversación disparado')\">Abrir conversación</button>";
     toolsWrap.innerHTML += "<div style='margin-top:12px'><button class='btn-row' onclick=\"openContentModal('Gamma','presentación de ventas')\">Gamma <span class='tag tag-api'>API</span></button>"+
