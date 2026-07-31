@@ -121,10 +121,23 @@
       <label>Correo</label>
       <input type="text" id="loginEmail" placeholder="tucorreo@negocio.com" style="margin-bottom:12px;">
       <label>Contraseña</label>
-      <input type="text" id="loginPass" placeholder="••••••••">
+      <input type="password" id="loginPass" placeholder="••••••••">
     </div>
     <button class="btn" style="width:100%;margin-top:16px;border-color:var(--amber)" onclick="doLogin()">Entrar</button>
     <p id="loginError" style="color:var(--rose);font-size:12.5px;margin-top:12px;min-height:16px;"></p>
+  </div>
+</div>
+
+<div id="recoveryScreen" style="display:none;min-height:100vh;align-items:center;justify-content:center;padding:20px;">
+  <div class="card" style="max-width:360px;width:100%;text-align:center;">
+    <p class="eyebrow">Sistema clientes llegan solos</p>
+    <h1 style="font-size:20px;margin-bottom:20px;">Elige tu nueva contraseña</h1>
+    <div style="text-align:left;">
+      <label>Nueva contraseña</label>
+      <input type="password" id="newPass" placeholder="Mínimo 8 caracteres">
+    </div>
+    <button class="btn" style="width:100%;margin-top:16px;border-color:var(--amber)" onclick="doSetNewPassword()">Guardar contraseña</button>
+    <p id="recoveryMsg" style="color:var(--muted);font-size:12.5px;margin-top:12px;min-height:16px;"></p>
   </div>
 </div>
 
@@ -281,15 +294,20 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 // ===== CONFIGURACIÓN — reemplaza con tus valores reales =====
-var SUPABASE_URL = "https://TU-PROYECTO.supabase.co";
-var SUPABASE_ANON_KEY = "TU_ANON_PUBLIC_KEY"; // la anon/public key SÍ es segura de exponer aquí, nunca la service_role
-var N8N_BASE_URL = "https://TU-N8N.dominio.com/webhook"; // base de tus webhooks de n8n
+var SUPABASE_URL = "https://miwpjeybnbccwemcntry.supabase.co";
+var SUPABASE_ANON_KEY = "sb_publishable_gdtJjzuZB70rYd4W-jKwLA_giETMjnk"; // publishable key, segura de exponer
+var N8N_BASE_URL = "https://curson8n-n8n.2k29bg.easypanel.host/webhook";
 // ================================================================
 
 var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 var tenantId = null;
 
 async function checkSession(){
+  if (window.location.hash.indexOf("type=recovery") >= 0){
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("recoveryScreen").style.display = "flex";
+    return;
+  }
   var { data } = await supabaseClient.auth.getSession();
   if (data.session){
     tenantId = data.session.user.user_metadata && data.session.user.user_metadata.tenant_id;
@@ -301,6 +319,14 @@ async function checkSession(){
     document.getElementById("panelRoot").style.display = "block";
     initPanel();
   }
+}
+async function doSetNewPassword(){
+  var pass = document.getElementById("newPass").value;
+  if (pass.length < 8){ document.getElementById("recoveryMsg").textContent = "Mínimo 8 caracteres."; return; }
+  var { error } = await supabaseClient.auth.updateUser({ password: pass });
+  if (error){ document.getElementById("recoveryMsg").textContent = "No se pudo guardar: " + error.message; return; }
+  document.getElementById("recoveryMsg").textContent = "Contraseña actualizada. Ya puedes iniciar sesión.";
+  setTimeout(function(){ window.location.href = window.location.pathname; }, 1800);
 }
 async function doLogin(){
   var email = document.getElementById("loginEmail").value.trim();
